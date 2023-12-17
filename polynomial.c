@@ -1,64 +1,115 @@
 #include <stdio.h>
 #include <stdlib.h>
+#include <math.h>
 
 typedef struct {
 
-    int numOfTerm;
-    long double *coefficients;
+    int numOfTerms;
+    double *coefficients;
+    int *powers;
 
-}diff_Eq;
+}Diff_Eq;
 
-void printEquation(int numberOfTerms, long double *coefficients, double yCoeff){
 
+// kullanıcıdan alınan katsayıları ve kuvvetleri print eden fonksiyon.
+void printEquation(int numberOfTerms, double *coefficients, double yCoeff, int *powers){
     int i;
     printf("\ny' = ");
-    printf("%.2lfy + ", yCoeff);
-    for (i = numberOfTerms - 1; i > 0; i--) {
-        printf("%.2Lf*x^%d + ", coefficients[i-1], i);
-        /*
-        if (i == numberOfTerms - 1 && numberOfTerms > 4 ) {
-            printf("%.2lf", coefficients[i]);
-        } else {
-            printf(" + %.2lf*x^%d", coefficients[i], i+1);
-        }*/
+    printf("%.2lfy", yCoeff);
+    for (i = 0; i < numberOfTerms - 1; i++) {
+        printf(" + %.2lfx^%d", coefficients[i], powers[i]);
     }
+}
+
+//y' = ay + ... + x şeklinde yazılan, runge-kutta methodunda kullanılan fonksiyon.
+double f(double x, double y, int numberOfTerms, double *coefficients, double yCoeff, int *powers) {
+
+    return yCoeff*y + coefficients[0]* pow(x, powers[0])
+    + coefficients[1]* pow(x, powers[1]);
 
 }
+
+
+
+// runge-kutta-4 methodu
+double rungeKutta(double x0, double y0, double h, double x_target,
+                  int numberOfTerms, double *coefficients, double yCoeff, int *powers) {
+    double x = x0;
+    double y = y0;
+
+    while (x < x_target) {
+        double k1 = h * f(x, y, numberOfTerms, coefficients, yCoeff, powers);
+        double k2 = h * f(x + h/2, y + k1/2, numberOfTerms, coefficients, yCoeff, powers);
+        double k3 = h * f(x + h/2, y + k2/2, numberOfTerms, coefficients, yCoeff, powers);
+        double k4 = h * f(x + h, y + k3, numberOfTerms, coefficients, yCoeff, powers);
+
+        y = y + (k1 + 2*k2 + 2*k3 + k4)/6;
+        x += h;
+    }
+    return y;
+}
+
+
 
 int main() {
 
     int i;
-    diff_Eq equation;
-    equation.coefficients = (long double *)malloc(sizeof(long double) * equation.numOfTerm);
+    Diff_Eq equation;
 
-/*    if (equation.coefficients == NULL) {
-        printf("Bellek tahsis hatasi!\n");
+    // eşitliğin sağ tarafında kalacak terim sayısı kullanıcıdan alınır.
+    printf("Enter the number of terms: ");
+    scanf("%d", &equation.numOfTerms);
+
+    //katsayı ve terimlerin kuvvetleri için bellekte yer ayrılır.
+    equation.coefficients = (double * ) malloc(equation.numOfTerms * sizeof(double));
+    equation.powers = (int * ) malloc(equation.numOfTerms * sizeof(int));
+
+
+    // eğer katsayı veya kuvvet pointerları için yer ayrılmazsa uygulamadan çıkış yapılır.
+    if (equation.coefficients == NULL || equation.powers == NULL) {
+        printf("Memory Allocation Error!\n");
         return 1;
     }
-*/
 
-    // Kullanıcıdan terim sayısını al
-    printf("Denklemin terim sayisini girin: ");
-    scanf("%d", &equation.numOfTerm);
-
+    // kullanıcıdan terimler ve katsayılar alınır.
     double yCoeff;
-    printf("Y'li ifadenin bas katsayisini girin: ");
+    printf("Enter the coefficient of y: ");
     scanf("%lf", &yCoeff);
 
+    for (i = 0; i < equation.numOfTerms - 1; i++) {
+        printf("Enter coefficient of %dst term: ", i + 1);
+        scanf("%lf", &equation.coefficients[i]);
 
-    // Kullanıcıdan her terimin baş katsayısını al
-    for (i = 0; i < equation.numOfTerm - 1; i++) {
-        printf("Terim %d'in bas katsayisini girin: ", i + 1);
-        scanf("%Lf", &equation.coefficients[i]);
+        printf("Enter power of %dst term: ", i + 1);
+        scanf("%d", &equation.powers[i]);
     }
 
+    //print metoduyla yazdırıp programın doğru çalışıp çalışmadığını kontrol edilir.
+    printEquation(equation.numOfTerms, equation.coefficients, yCoeff, equation.powers);
 
-    printEquation(equation.numOfTerm, equation.coefficients, yCoeff);
+    //kullanıcıdan inital değerler, adım sayısı ve ulaşmak istediğimiz noktanın değeri alınır.
+    double x0, y0, h, x_target;
+    printf("\nenter the initial value x0: ");
+    scanf("%lf", &x0);
+    printf("enter the initial value y0: ");
+    scanf("%lf", &y0);
+    printf("enter the step size h: ");
+    scanf("%lf", &h);
+    printf("enter the target value: ");
+    scanf("%lf", &x_target);
 
+
+    // runge-kutta-4 fonksiyonunu çalıştırır.
+    double result = rungeKutta(x0, y0, h,
+                               x_target,equation.numOfTerms, equation.coefficients, yCoeff, equation.powers);
+
+    // sonucu yazdırır
+    printf("\ny(%.2f) = %.4f\n", x_target, result);
+
+    //bellekte ayrılan yerleri temizler.
     free(equation.coefficients);
-    free(equation.coefficients);
+    free(equation.powers);
 
-    printf("\n");
-    system("pause");
+
     return 0;
 }
