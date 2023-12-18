@@ -22,17 +22,21 @@ void printEquation(int numberOfTerms, double *coefficients, double yCoeff, int *
 }
 
 //y' = ay + ... + x şeklinde yazılan, runge-kutta methodunda kullanılan fonksiyon.
+
 double f(double x, double y, int numberOfTerms, double *coefficients, double yCoeff, int *powers) {
-
-    return yCoeff*y + coefficients[0]* pow(x, powers[0])
-           + coefficients[1]* pow(x, powers[1]);
-
+    double finalEq = yCoeff * y;
+    int i;
+    for (i = 0; i < numberOfTerms; ++i) {
+        finalEq += coefficients[i] * pow(x, powers[i]);
+    }
+    return finalEq;
 }
 
 
 
+
 // runge-kutta-4 methodu
-double rungeKutta(double x0, double y0, double h, double x_target,
+void rungeKutta(double x0, double y0, double h, double x_target,
                   int numberOfTerms, double *coefficients, double yCoeff, int *powers) {
     double x = x0;
     double y = y0;
@@ -45,8 +49,9 @@ double rungeKutta(double x0, double y0, double h, double x_target,
 
         y = y + (k1 + 2*k2 + 2*k3 + k4)/6;
         x += h;
+        printf("\ny(%.2f) = %.5f", x, y);//her adımdaki hesaplanan sonuçları ekrana bastırmak için.
     }
-    return y;
+
 }
 
 
@@ -60,6 +65,13 @@ int main() {
     printf("Enter the number of terms: ");
     scanf("%d", &equation.numOfTerms);
 
+    while(equation.numOfTerms <= 0){
+        printf("Minimum number of terms is 1.\n");
+        printf("Enter the number of terms again: ");
+        scanf("%d", &equation.numOfTerms);
+    }//bu döngü ile girilen terim sayısının kontrolünü yapıyorum.
+
+
     //katsayı ve terimlerin kuvvetleri için bellekte yer ayrılır.
     equation.coefficients = (double * ) malloc(equation.numOfTerms * sizeof(double));
     equation.powers = (int * ) malloc(equation.numOfTerms * sizeof(int));
@@ -71,10 +83,12 @@ int main() {
         return 1;
     }
 
+
     // kullanıcıdan terimler ve katsayılar alınır.
     double yCoeff;
     printf("Enter the coefficient of y: ");
     scanf("%lf", &yCoeff);
+
 
     for (i = 0; i < equation.numOfTerms - 1; i++) {
         printf("Enter coefficient of %dst term: ", i + 1);
@@ -84,8 +98,10 @@ int main() {
         scanf("%d", &equation.powers[i]);
     }
 
+
     //print metoduyla yazdırıp programın doğru çalışıp çalışmadığını kontrol edilir.
     printEquation(equation.numOfTerms, equation.coefficients, yCoeff, equation.powers);
+
 
     //kullanıcıdan inital değerler, adım sayısı ve ulaşmak istediğimiz noktanın değeri alınır.
     double x0, y0, h, x_target;
@@ -99,12 +115,11 @@ int main() {
     scanf("%lf", &x_target);
 
 
-    // runge-kutta-4 fonksiyonunu çalıştırır.
-    double result = rungeKutta(x0, y0, h,
-                               x_target,equation.numOfTerms, equation.coefficients, yCoeff, equation.powers);
+    //runge-kutta-4 methodunu çalıştır.
+    //print etme kısmını döngüyle birlikte direkt olarak runge-kutta fonksiyonunda tanımladım.
+    rungeKutta(x0, y0, h, x_target,equation.numOfTerms,
+               equation.coefficients, yCoeff, equation.powers);
 
-    // sonucu yazdırır
-    printf("\ny(%.2f) = %.4f\n", x_target, result);
 
     //bellekte ayrılan yerleri temizler.
     free(equation.coefficients);
