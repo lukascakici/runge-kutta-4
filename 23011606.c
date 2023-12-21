@@ -125,7 +125,6 @@ int main() {
     free(equation.coefficients);
     free(equation.powers);
 
-
     
     return 0;
 }
