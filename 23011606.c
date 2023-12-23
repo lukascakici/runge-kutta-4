@@ -36,21 +36,23 @@ double f(double x, double y, int numberOfTerms, double *coefficients, double yCo
 
 
 // runge-kutta-4 methodu
-void rungeKutta(double x0, double y0, double h, double x_target,
-                  int numberOfTerms, double *coefficients, double yCoeff, int *powers) {
-    double x = x0;
-    double y = y0;
+void rungeKutta(double x0, double y0, double h, double x_target, int numberOfTerms, double *coefficients, double yCoeff, int *powers) {
+
+    double k1, k2, k3, k4, y, x;
+    x = x0;
+    y = y0;
 
     while (x < x_target) {
-        double k1 = h * f(x, y, numberOfTerms, coefficients, yCoeff, powers);
-        double k2 = h * f(x + h/2, y + k1/2, numberOfTerms, coefficients, yCoeff, powers);
-        double k3 = h * f(x + h/2, y + k2/2, numberOfTerms, coefficients, yCoeff, powers);
-        double k4 = h * f(x + h, y + k3, numberOfTerms, coefficients, yCoeff, powers);
+        k1 = h * f(x, y, numberOfTerms, coefficients, yCoeff, powers);
+        k2 = h * f(x + h/2, y + k1/2, numberOfTerms, coefficients, yCoeff, powers);
+        k3 = h * f(x + h/2, y + k2/2, numberOfTerms, coefficients, yCoeff, powers);
+        k4 = h * f(x + h, y + k3, numberOfTerms, coefficients, yCoeff, powers);
 
         y = y + (k1 + 2*k2 + 2*k3 + k4)/6;
         x += h;
         printf("\ny(%.2f) = %.5f", x, y);//her adımdaki hesaplanan sonuçları ekrana bastırmak için.
     }
+
 
 }
 
@@ -91,10 +93,10 @@ int main() {
 
 
     for (i = 0; i < equation.numOfTerms - 1; i++) {
-        printf("Enter coefficient of %dst term: ", i + 1);
+        printf("Enter coefficient of %d. expression with x: ", i + 1);
         scanf("%lf", &equation.coefficients[i]);
 
-        printf("Enter power of %dst term: ", i + 1);
+        printf("Enter power of %d. expression with x: ", i + 1);
         scanf("%d", &equation.powers[i]);
     }
 
@@ -117,14 +119,17 @@ int main() {
 
     //runge-kutta-4 methodunu çalıştır.
     //print etme kısmını döngüyle birlikte direkt olarak runge-kutta fonksiyonunda tanımladım.
-    rungeKutta(x0, y0, h, x_target,equation.numOfTerms,
-               equation.coefficients, yCoeff, equation.powers);
+    rungeKutta(x0, y0, h, x_target,equation.numOfTerms, equation.coefficients, yCoeff, equation.powers);
+
+
 
 
     //bellekte ayrılan yerleri temizler.
     free(equation.coefficients);
     free(equation.powers);
 
-    
+
+    printf("\n");
+    system("pause");
     return 0;
 }
