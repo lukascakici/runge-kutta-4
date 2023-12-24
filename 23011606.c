@@ -23,10 +23,11 @@ void printEquation(int numberOfTerms, double *coefficients, double yCoeff, int *
 
 //y' = ay + ... + x şeklinde yazılan, runge-kutta methodunda kullanılan fonksiyon.
 
-double f(double x, double y, int numberOfTerms, double *coefficients, double yCoeff, int *powers) {
+double f(double x, double y, int numberOfTerms, const double *coefficients, double yCoeff, int *powers) {
     double finalEq = yCoeff * y;
     int i;
-    for (i = 0; i < numberOfTerms; ++i) {
+    for (i = 0; i < numberOfTerms-1; ++i) {
+
         finalEq += coefficients[i] * pow(x, powers[i]);
     }
     return finalEq;
