@@ -4,14 +4,14 @@
 
 typedef struct {
 
-    int numOfTerms;
-    double *coefficients;
-    int *powers;
+    int numOfTerms; //terim sayisi
+    double *coefficients; //katsayilar
+    int *powers; //terimlerin kuvvetleri
 
 }Diff_Eq;
 
 
-// kullanıcıdan alınan katsayıları ve kuvvetleri print eden fonksiyon.
+// kullanicidan alinan katsayilari ve kuvvetleri print eden fonksiyon.
 void printEquation(int numberOfTerms, double *coefficients, double yCoeff, int *powers){
     int i;
     printf("\ny' = ");
@@ -21,8 +21,7 @@ void printEquation(int numberOfTerms, double *coefficients, double yCoeff, int *
     }
 }
 
-//y' = ay + ... + x şeklinde yazılan, runge-kutta methodunda kullanılan fonksiyon.
-
+//y' = ay + ... + x seklinde yazilan, runge-kutta methodunda kullanilan fonksiyon.
 double f(double x, double y, int numberOfTerms, const double *coefficients, double yCoeff, int *powers) {
     double finalEq = yCoeff * y;
     int i;
@@ -51,7 +50,7 @@ void rungeKutta(double x0, double y0, double h, double x_target, int numberOfTer
 
         y = y + (k1 + 2*k2 + 2*k3 + k4)/6;
         x += h;
-        printf("\ny(%.2f) = %.5f", x, y);//her adımdaki hesaplanan sonuçları ekrana bastırmak için.
+        printf("\ny(%.2f) = %.5f", x, y);//her adimdaki hesaplanan sonuclari ekrana bastirmak icin.
     }
 
 
@@ -64,7 +63,7 @@ int main() {
     int i;
     Diff_Eq equation;
 
-    // eşitliğin sağ tarafında kalacak terim sayısı kullanıcıdan alınır.
+    // esitligin sag tarafinda kalacak terim sayisi kullanicidan alinir.
     printf("Enter the number of terms: ");
     scanf("%d", &equation.numOfTerms);
 
@@ -72,22 +71,22 @@ int main() {
         printf("Minimum number of terms is 1.\n");
         printf("Enter the number of terms again: ");
         scanf("%d", &equation.numOfTerms);
-    }//bu döngü ile girilen terim sayısının kontrolünü yapıyorum.
+    }//bu dongu ile girilen terim sayisinin kontrolunu yapiyorum.
 
 
-    //katsayı ve terimlerin kuvvetleri için bellekte yer ayrılır.
+    //katsayi ve terimlerin kuvvetleri icin bellekte yer ayrilir.
     equation.coefficients = (double * ) malloc(equation.numOfTerms * sizeof(double));
     equation.powers = (int * ) malloc(equation.numOfTerms * sizeof(int));
 
 
-    // eğer katsayı veya kuvvet pointerları için yer ayrılmazsa uygulamadan çıkış yapılır.
+    // eger katsayi veya kuvvet pointerlari icin yer ayrilmazsa uygulamadan cikis yapilir.
     if (equation.coefficients == NULL || equation.powers == NULL) {
         printf("Memory Allocation Error!\n");
         return 1;
     }
 
 
-    // kullanıcıdan terimler ve katsayılar alınır.
+    // kullanicidan terimler ve katsayilar alinir.
     double yCoeff;
     printf("Enter the coefficient of y: ");
     scanf("%lf", &yCoeff);
@@ -102,11 +101,11 @@ int main() {
     }
 
 
-    //print metoduyla yazdırıp programın doğru çalışıp çalışmadığını kontrol edilir.
+    //print metoduyla yazdirip programin dogru calisip calismadigi kontrol edilir.
     printEquation(equation.numOfTerms, equation.coefficients, yCoeff, equation.powers);
 
 
-    //kullanıcıdan inital değerler, adım sayısı ve ulaşmak istediğimiz noktanın değeri alınır.
+    //kullanicidan inital değerler, adim sayisi ve ulasmak istedigimiz noktanin degeri alinir.
     double x0, y0, h, x_target;
     printf("\nenter the initial value x0: ");
     scanf("%lf", &x0);
@@ -118,14 +117,13 @@ int main() {
     scanf("%lf", &x_target);
 
 
-    //runge-kutta-4 methodunu çalıştır.
-    //print etme kısmını döngüyle birlikte direkt olarak runge-kutta fonksiyonunda tanımladım.
+    //runge-kutta-4 methodunu calistir..
     rungeKutta(x0, y0, h, x_target,equation.numOfTerms, equation.coefficients, yCoeff, equation.powers);
 
 
 
 
-    //bellekte ayrılan yerleri temizler.
+    //bellekte ayrilan yerleri temizler.
     free(equation.coefficients);
     free(equation.powers);
 
