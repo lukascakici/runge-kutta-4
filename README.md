@@ -1,4 +1,4 @@
-***The aim of the program is to solve first order, linear differential equations written in the form "y' = Ay + P(x)" using runge-kutta-4th method.***
+***The aim of the program is to solve first order, linear differential equations written in the form "y' = Ay + P(x)" using runge-kutta-4th method. Written in C***
 
 • Firstly, it will ask for how many terms are in the equation, at that step even if your equation does not have a term with y variable you should consider adding 1 to the number of terms. 
 
